@@ -1,4 +1,4 @@
-// Define the Template interface that represents the common structure of the template.
+// Challenge 3 of https://github.com/diegopacheco/tech-resources/blob/master/react-native-resources.md#ooad-challenges---round-1
 interface Template {
     render(): string;
 }
