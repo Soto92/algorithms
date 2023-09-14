@@ -1,2 +1,3 @@
-# algorithms
-Implementation some algortihms to study purposes.
+# Algorithms
+
+Implementation of some algorithms to study purposes.
