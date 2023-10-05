@@ -4,63 +4,53 @@ interface Dish {
     cookTime: number;
 }
 
-class LocosConMayo implements Dish {
-    name = "LocosConMayo";
+class Fish implements Dish {
+    name = "Fish";
+    constructor(value: string) {
+        this.name = value
+    }
     cookTime = 5;
 }
 
-class Ceviche implements Dish {
-    name = "Ceviche";
+class Beef implements Dish {
+    name = "Beef";
+    constructor(value: string) {
+        this.name = value
+    }
     cookTime = 4;
 }
 
 interface DishFactory {
-    createDish(): Dish;
+    createDish(dishName: string): Dish;
 }
 
-class LocosConMayoFactory implements DishFactory {
-    createDish() {
-        return new LocosConMayo();
+class FishFactory implements DishFactory {
+    createDish(dishName: string) {
+        return new Fish(dishName);
     }
 }
 
-class CevicheFactory implements DishFactory {
-    createDish() {
-        return new Ceviche();
-    }
-}
-
-interface TimeEstimationStrategy {
-    estimateTime(dish: Dish): number;
-}
-
-class SimpleEstimationStrategy implements TimeEstimationStrategy {
-    estimateTime(dish: Dish) {
-        return dish.cookTime;
-    }
-}
-
-class ComplexEstimationStrategy implements TimeEstimationStrategy {
-    estimateTime(dish: Dish) {
-        return dish.cookTime * 1.5;
+class BeefFactory implements DishFactory {
+    createDish(dishName: string) {
+        return new Beef(dishName);
     }
 }
 
 class QueueItem {
-    constructor(public dish: Dish, public strategy: TimeEstimationStrategy) {}
-    estimateCompletionTime() {
-        return this.strategy.estimateTime(this.dish);
+    constructor(public dish: Dish) {}
+    estimateTime() {
+        return this.dish.cookTime;
     }
 }
 
 class RestaurantQueue {
     private queue: QueueItem[] = [];
-    addToQueue(dishNames: string[], estimationStrategy: TimeEstimationStrategy) {
+    addToQueue(dishNames: string[]) {
         for (const dishName of dishNames) {
             const dishFactory = this.getDishFactoryByName(dishName);
             if (dishFactory) {
-                const dish = dishFactory.createDish();
-                const queueItem = new QueueItem(dish, estimationStrategy);
+                const dish = dishFactory.createDish(dishName);
+                const queueItem = new QueueItem(dish);
                 this.queue.push(queueItem);
                 console.log(`Added ${dish.name} to the queue.`);
             } else {
@@ -72,9 +62,11 @@ class RestaurantQueue {
     private getDishFactoryByName(dishName: string): DishFactory | undefined {
         switch (dishName.toLowerCase()) {
             case "locosconmayo":
-                return new LocosConMayoFactory();
+                return new FishFactory();
+            case "beefwithfries":
+                return new BeefFactory();
             case "ceviche":
-                return new CevicheFactory();
+                return new FishFactory();
             default:
                 return undefined;
         }
@@ -85,7 +77,7 @@ class RestaurantQueue {
             return;
         }
         const nextItem = this.queue.shift();
-        const completionTime = nextItem?.estimateCompletionTime();
+        const completionTime = nextItem?.estimateTime();
         if (completionTime !== undefined) {
             console.log(`Preparing ${nextItem?.dish.name}. Estimated time: ${completionTime} minutes.`);
             setTimeout(() => {
@@ -94,20 +86,31 @@ class RestaurantQueue {
             }, completionTime * 1000);
         }
     }
+    timeQueue() {
+        let totalTime = 0
+        this.queue.forEach(dish => {
+            totalTime += dish.estimateTime()
+        });
+        console.log("Total time: ", totalTime)
+    }
 }
 
 const queue = new RestaurantQueue();
-queue.addToQueue(["Ceviche", "LocosConMayo"], new ComplexEstimationStrategy());
-
+queue.addToQueue(["Ceviche", "LocosConMayo", "BeefWithFries"]);
+queue.timeQueue();
 queue.processQueue();
 
 /**
 npx ts-node src/restaurantQueueSystem.ts
 Added Ceviche to the queue.
 Added LocosConMayo to the queue.
-Preparing Ceviche. Estimated time: 6 minutes.
+Added BeefWithFries to the queue.
+Total time:  14
+Preparing Ceviche. Estimated time: 5 minutes.
 Ceviche is ready.
-Preparing LocosConMayo. Estimated time: 7.5 minutes.
+Preparing LocosConMayo. Estimated time: 5 minutes.
 LocosConMayo is ready.
+Preparing BeefWithFries. Estimated time: 4 minutes.
+BeefWithFries is ready.
 Queue is empty.
  */
