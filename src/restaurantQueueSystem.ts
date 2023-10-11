@@ -6,18 +6,18 @@ interface Dish {
 
 class Fish implements Dish {
     name = "Fish";
+    readonly cookTime = 5;
     constructor(value: string) {
         this.name = value
     }
-    cookTime = 5;
 }
 
 class Beef implements Dish {
     name = "Beef";
+    readonly cookTime = 4;
     constructor(value: string) {
         this.name = value
     }
-    cookTime = 4;
 }
 
 interface DishFactory {
