@@ -2,9 +2,7 @@
 
 Implementation of some algorithms to study purposes.
 
-## I've been doing one algorithm a day for:
-
-5 working days now
+## I am 6 consecutive business days doing algorithms:
 
 ## Useful Links and Tools
 
