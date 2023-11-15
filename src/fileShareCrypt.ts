@@ -1,31 +1,42 @@
 // (2) Build a FileShare System (save files, restore files, delete files, listFiles, Search) with encryption
 // https://github.com/diegopacheco/tech-resources/blob/master/react-native-resources.md#ooad-challenges-round-2
-
 import * as crypto from 'crypto';
+import * as fs from 'fs';
 
 const ENCRYPTION_ALGORITHM = 'aes-256-ctr';
-const ENCRYPTION_KEY = '01234567890123456789012345678901'
+const ENCRYPTION_KEY = '01234567890123456789012345678901';
 const iv = Buffer.alloc(16, 0);
 
-function encrypt(text: string): string {
+function encryptFile(inputFilePath: string, outputFilePath: string): void {
+    const inputBuffer = fs.readFileSync(inputFilePath);
     const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, ENCRYPTION_KEY, iv);
-    let encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    return encrypted;
+    const encryptedBuffer = Buffer.concat([cipher.update(inputBuffer), cipher.final()]);
+    fs.writeFileSync(outputFilePath, encryptedBuffer);
 }
 
-function decrypt(encrypted: string): string {
+function decryptFile(inputFilePath: string, outputFilePath: string): void {
+    const encryptedBuffer = fs.readFileSync(inputFilePath);
     const decipher = crypto.createDecipheriv(ENCRYPTION_ALGORITHM, ENCRYPTION_KEY, iv);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
+    const decryptedBuffer = Buffer.concat([decipher.update(encryptedBuffer), decipher.final()]);
+    fs.writeFileSync(outputFilePath, decryptedBuffer);
 }
 
-const originalString = 'Mauricio Soto';
-const encryptedString = encrypt(originalString);
+// TXT File
+const textInputPath = './cryptoAssets/input.txt';
+const encryptedTextOutputPath = './cryptoAssets/encrypted.txt';
+const decryptedTextOutputPath = './cryptoAssets/decrypted.txt';
 
-console.log('Original String:', originalString);
-console.log('Encrypted String:', encryptedString);
+encryptFile(textInputPath, encryptedTextOutputPath);
+console.log('Text Encrypted and saved to:', encryptedTextOutputPath);
+decryptFile(encryptedTextOutputPath, decryptedTextOutputPath);
+console.log('Text Decrypted and saved to:', decryptedTextOutputPath);
 
-const decryptedString = decrypt(encryptedString);
-console.log('Decrypted String:', decryptedString);
+// JPEG file
+const imageInputPath = './cryptoAssets/input.png';
+const encryptedImageOutputPath = './cryptoAssets/encrypted.png';
+const decryptedImageOutputPath = './cryptoAssets/decrypted.png';
+
+encryptFile(imageInputPath, encryptedImageOutputPath);
+console.log('Image Encrypted and saved to:', encryptedImageOutputPath);
+decryptFile(encryptedImageOutputPath, decryptedImageOutputPath);
+console.log('Image Decrypted and saved to:', decryptedImageOutputPath);
