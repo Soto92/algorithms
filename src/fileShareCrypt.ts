@@ -21,6 +21,30 @@ function decryptFile(inputFilePath: string, outputFilePath: string): void {
     fs.writeFileSync(outputFilePath, decryptedBuffer);
 }
 
+function listFilesInDirectory(directoryPath: string): string[] {
+    const files = fs.readdirSync(directoryPath);
+    return files.map(file => {
+        const isDeleted = file.endsWith('.deleted');
+        return {
+            name: file,
+            isDeleted: isDeleted
+        };
+    });
+}
+
+function editTextFile(filePath: string, newText: string): void {
+    fs.writeFileSync(filePath, newText);
+}
+
+function deleteFile(filePath: string): void {
+    const deletedFilePath = filePath + '.deleted';
+    fs.renameSync(filePath, deletedFilePath);
+}
+
+function restoreFile(deletedFilePath: string, originalFilePath: string): void {
+    fs.renameSync(deletedFilePath, originalFilePath);
+}
+
 // TXT File
 const textInputPath = './cryptoAssets/input.txt';
 const encryptedTextOutputPath = './cryptoAssets/encrypted.txt';
@@ -40,3 +64,26 @@ encryptFile(imageInputPath, encryptedImageOutputPath);
 console.log('Image Encrypted and saved to:', encryptedImageOutputPath);
 decryptFile(encryptedImageOutputPath, decryptedImageOutputPath);
 console.log('Image Decrypted and saved to:', decryptedImageOutputPath);
+
+// Edit
+const textFilePath = 'edited.txt';
+const newText = 'Edited content';
+editTextFile(textFilePath, newText);
+console.log('Text File Edited and saved to:', textFilePath);
+
+// Delete
+const fileToDelete = 'fileToDelete.txt';
+fs.writeFileSync(fileToDelete, 'Content to delete');
+console.log('File to Delete Created:', fileToDelete);
+
+deleteFile(fileToDelete);
+console.log('File Soft Deleted:', fileToDelete);
+
+// Restore
+const deletedFilePath = fileToDelete + '.deleted';
+restoreFile(deletedFilePath, fileToDelete);
+console.log('File Restored:', fileToDelete);
+
+// List files again (including deleted files)
+const updatedFilesInDirectory = listFilesInDirectory('./cryptoAssets');
+console.log('Updated Files in Directory:', updatedFilesInDirectory);
