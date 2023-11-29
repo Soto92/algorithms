@@ -7,7 +7,7 @@ const ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const ENCRYPTION_KEY = '01234567890123456789012345678901';
 const iv = Buffer.alloc(16, 0);
 
-export function encryptFile(file): Buffer {
+export function encryptFile(file: Buffer): Buffer {
     const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
     const encryptedBuffer = Buffer.concat([
         cipher.update(file),
@@ -29,8 +29,10 @@ export function listFilesInDirectory(directoryPath: string): string[] {
     );
 }
 
-export function editTextFile(filePath: string, newText: string): void {
-    fs.writeFileSync(filePath, newText);
+export function editFileContent(filePath: string, newText: string): void {
+    const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, Buffer.from(ENCRYPTION_KEY), iv);
+    const encryptedBuffer = Buffer.concat([cipher.update(newText, 'utf-8'), cipher.final()]);
+    fs.writeFileSync(filePath, encryptedBuffer);
 }
 
 export function deleteFile(filePath: string): void {
