@@ -27,16 +27,16 @@ class Graph {
 }
 
 
-const graph = new Graph();
-graph.addVertex('A');
-graph.addVertex('B');
-graph.addVertex('C');
-graph.addVertex('D');
-graph.addEdge('A', 'B');
-graph.addEdge('A', 'C');
-graph.addEdge('B', 'D');
+const undirectedGraph = new Graph();
+undirectedGraph.addVertex('A');
+undirectedGraph.addVertex('B');
+undirectedGraph.addVertex('C');
+undirectedGraph.addVertex('D');
+undirectedGraph.addEdge('A', 'B');
+undirectedGraph.addEdge('A', 'C');
+undirectedGraph.addEdge('B', 'D');
 
-graph.printGraph();
+undirectedGraph.printGraph();
 /**
 npx ts-node src/graph.ts
 A -> B, C
