@@ -33,6 +33,12 @@ n == dungeon[i].length
 
 https://leetcode.com/problems/dungeon-game/description/
 
+# Hot to run?
+
+```
+ts-node FILE_NAME.ts
+```
+
 # Algorithm solutions
 
 | Strategy            | Suitable?  | Notes                                        |
