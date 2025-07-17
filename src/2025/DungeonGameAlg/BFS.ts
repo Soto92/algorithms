@@ -64,10 +64,6 @@ class PriorityQueue<T> {
 function calculateMinimumHP(dungeon: number[][]): number {
   const m = dungeon.length;
   const n = dungeon[0].length;
-  const directions = [
-    [1, 0],
-    [0, 1],
-  ];
 
   const visited = Array.from({ length: m }, () => Array(n).fill(Infinity));
 
