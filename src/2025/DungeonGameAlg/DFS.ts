@@ -26,3 +26,5 @@ const dungeon = [
 ];
 
 console.log(calculateMinimumHP(dungeon));
+
+export { calculateMinimumHP };
