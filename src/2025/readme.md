@@ -6,4 +6,4 @@
 
 ## Author
 
-Mauricio Soto
+Mauricio Soto P.
