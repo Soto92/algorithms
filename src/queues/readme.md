@@ -112,3 +112,7 @@ Each queue is implemented as a separate JavaScript class. You can import them in
 ```bash
 node yourScript.js
 ```
+
+## Author
+
+Mauricio Soto
