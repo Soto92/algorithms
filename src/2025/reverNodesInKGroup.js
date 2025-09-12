@@ -44,7 +44,6 @@ head.next.next.next.next = new ListNode(5);
 
 let result = reverseKGroup(head, 2);
 
-// Convert linked list to array
 let arr = [];
 while (result) {
   arr.push(result.val);
