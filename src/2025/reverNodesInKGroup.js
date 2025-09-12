@@ -51,3 +51,5 @@ while (result) {
   result = result.next;
 }
 console.log(arr); // [2,1,4,3,5]
+
+// https://leetcode.com/problems/reverse-nodes-in-k-group/
