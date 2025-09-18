@@ -1,10 +1,12 @@
 function alienOrder(words) {
   const graph = new Map();
   const indeg = new Map();
+  
   for (const w of words) for (const c of w) {
     if (!graph.has(c)) graph.set(c, new Set());
     if (!indeg.has(c)) indeg.set(c, 0);
   }
+  
   for (let i = 0; i + 1 < words.length; i++) {
     const w1 = words[i], w2 = words[i + 1];
     if (w1.length > w2.length && w1.slice(0, w2.length) === w2) return "";
@@ -21,6 +23,7 @@ function alienOrder(words) {
       }
     }
   }
+  
   const q = [];
   for (const [c, d] of indeg) if (d === 0) q.push(c);
   const res = [];
@@ -32,5 +35,6 @@ function alienOrder(words) {
       if (indeg.get(nei) === 0) q.push(nei);
     }
   }
+  
   return res.length === indeg.size ? res.join('') : "";
 }
