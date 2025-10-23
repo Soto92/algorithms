@@ -171,25 +171,21 @@ runPerformanceTest(validateWithArrayFind, "Array.find()");
 runPerformanceTest(validateWithIfElse, "If/Else Chain");
 
 /** output
- bun .\validations.js
+bun .\validations.js      
 Running expanded validation performance comparison (25 types)...
 
 🚀 Starting benchmark for: Switch Case
-✅ Finished Switch Case in 68.4609 ms.
+✅ Finished Switch Case in 77.4443 ms.
 
 🚀 Starting benchmark for: Object Literal Map
-✅ Finished Object Literal Map in 48.0552 ms.
+✅ Finished Object Literal Map in 77.9642 ms.
 
 🚀 Starting benchmark for: Map Object
-✅ Finished Map Object in 106.3784 ms.
+✅ Finished Map Object in 130.8153 ms.
 
 🚀 Starting benchmark for: Array.find()
-✅ Finished Array.find() in 407.0861 ms.
+✅ Finished Array.find() in 538.2765 ms.
 
 🚀 Starting benchmark for: If/Else Chain
-✅ Finished If/Else Chain in 68.8392 ms.
-
-new If Else returning directly the regex:
-🚀 Starting benchmark for: If/Else Chain
-✅ Finished If/Else Chain in 71.3202 ms.
+✅ Finished If/Else Chain in 79.8437 ms.
  */
