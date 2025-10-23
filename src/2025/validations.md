@@ -51,3 +51,7 @@ Running expanded validation performance comparison (25 types)...
 | **Map Object**         | **89.05**    | 133.36           | 🟢 **Bun**         | Bun ≈ **1.50× faster**     |
 | **Array.find()**       | 451.33       | **176.27**       | 🟢 **Node.js**     | Node ≈ **2.56× faster**    |
 | **If/Else Chain**      | **56.19**    | 96.32            | 🟢 **Bun**         | Bun ≈ **1.71× faster**     |
+
+## Author
+
+Mauricio Soto
