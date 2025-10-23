@@ -7,13 +7,13 @@ function heavyComputation(n) {
 }
 
 function warmup(func, iterations = 5) {
-  console.log(`Executando warmup (${iterations} vezes)...`);
+  console.log(`Running warmup (${iterations} times)...`);
   const start = performance.now();
   for (let i = 0; i < iterations; i++) {
     func(1e5);
   }
   const end = performance.now();
-  console.log(`Warmup concluído em ${(end - start).toFixed(2)}ms\n`);
+  console.log(`Warmup completed ${(end - start).toFixed(2)}ms\n`);
 }
 
 function main() {
@@ -21,10 +21,10 @@ function main() {
   warmup(heavyComputation, 10);
 
   // step 2: real performance
-  console.time("execução real");
+  console.time("real execution");
   const result = heavyComputation(1e7);
-  console.timeEnd("execução real");
-  console.log("Resultado:", result);
+  console.timeEnd("real execution");
+  console.log("Result:", result);
 }
 
 main();
