@@ -52,6 +52,45 @@ Running expanded validation performance comparison (25 types)...
 | **Array.find()**       | 451.33       | **176.27**       | 🟢 **Node.js**     | Node ≈ **2.56× faster**    |
 | **If/Else Chain**      | **56.19**    | 96.32            | 🟢 **Bun**         | Bun ≈ **1.71× faster**     |
 
+## Array find vs for loop
+
+a simpler version of find:
+
+```
+function find(callback, thisArg) {
+  // 'this' é o array
+  for (let i = 0; i < this.length; i++) {
+    if (i in this) { // verifica se o índice existe (importante para arrays esparsos)
+      const value = this[i];
+      if (callback.call(thisArg, value, i, this)) {
+        return value;
+      }
+    }
+  }
+  return undefined;
+}
+
+```
+
+Simple for loop:
+
+```
+const arr = [5, 12, 8, 130, 44];
+let found;
+
+for (let i = 0; i < arr.length; i++) {
+  if (arr[i] > 10) {
+    found = arr[i];
+    break;
+  }
+}
+
+console.log(found); // → 12
+
+```
+
+So we can conclude that the For loop is faster that Find, because you don't need to check index neither do callbacks.
+
 ## Author
 
 Mauricio Soto
