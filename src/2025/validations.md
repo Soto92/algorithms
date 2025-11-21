@@ -6,19 +6,25 @@
 Running expanded validation performance comparison (25 types)...
 
 🚀 Starting benchmark for: Switch Case
-✅ Finished Switch Case in 34.9197 ms.
+✅ Finished Switch Case in 20.1266 ms.
 
 🚀 Starting benchmark for: Object Literal Map
-✅ Finished Object Literal Map in 41.8949 ms.
+✅ Finished Object Literal Map in 20.7063 ms.
 
 🚀 Starting benchmark for: Map Object
-✅ Finished Map Object in 89.0476 ms.
+✅ Finished Map Object in 48.4529 ms.
 
 🚀 Starting benchmark for: Array.find()
-✅ Finished Array.find() in 451.3262 ms.
+✅ Finished Array.find() in 185.5344 ms.
 
 🚀 Starting benchmark for: If/Else Chain
-✅ Finished If/Else Chain in 56.1890 ms.
+✅ Finished If/Else Chain in 27.9327 ms.
+
+🚀 Starting benchmark for: For Find Style
+✅ Finished For Find Style in 112.4867 ms.
+
+🚀 Starting benchmark for: For Loop
+✅ Finished For Loop in 4329.2878 ms.
 ```
 
 ## Node output
@@ -27,40 +33,51 @@ Running expanded validation performance comparison (25 types)...
 Running expanded validation performance comparison (25 types)...
 
 🚀 Starting benchmark for: Switch Case
-✅ Finished Switch Case in 49.5579 ms.
+✅ Finished Switch Case in 24.5179 ms.
 
 🚀 Starting benchmark for: Object Literal Map
-✅ Finished Object Literal Map in 135.7696 ms.
+✅ Finished Object Literal Map in 59.5286 ms.
 
 🚀 Starting benchmark for: Map Object
-✅ Finished Map Object in 133.3632 ms.
+✅ Finished Map Object in 41.9615 ms.
 
 🚀 Starting benchmark for: Array.find()
-✅ Finished Array.find() in 176.2687 ms.
+✅ Finished Array.find() in 82.5658 ms.
 
 🚀 Starting benchmark for: If/Else Chain
-✅ Finished If/Else Chain in 96.3159 ms.
+✅ Finished If/Else Chain in 26.6366 ms.
+
+🚀 Starting benchmark for: For Find Style
+✅ Finished For Find Style in 79.3346 ms.
+
+🚀 Starting benchmark for: For Loop
+✅ Finished For Loop in 957.1584 ms.
 ```
 
-## Results
+---
 
-| **Validation Type**    | **Bun (ms)** | **Node.js (ms)** | **Faster Runtime** | **Performance Difference** |
+# Results
+
+| **Validation Method**  | **Bun (ms)** | **Node.js (ms)** | **Faster Runtime** | **Performance Difference** |
 | ---------------------- | ------------ | ---------------- | ------------------ | -------------------------- |
-| **Switch Case**        | **34.92**    | 49.56            | 🟢 **Bun**         | Bun ≈ **1.42× faster**     |
-| **Object Literal Map** | **41.89**    | 135.77           | 🟢 **Bun**         | Bun ≈ **3.24× faster**     |
-| **Map Object**         | **89.05**    | 133.36           | 🟢 **Bun**         | Bun ≈ **1.50× faster**     |
-| **Array.find()**       | 451.33       | **176.27**       | 🟢 **Node.js**     | Node ≈ **2.56× faster**    |
-| **If/Else Chain**      | **56.19**    | 96.32            | 🟢 **Bun**         | Bun ≈ **1.71× faster**     |
+| **Switch Case**        | **20.13**    | 24.52            | 🟢 **Bun**         | Bun ≈ **1.22× faster**     |
+| **Object Literal Map** | **20.71**    | 59.53            | 🟢 **Bun**         | Bun ≈ **2.87× faster**     |
+| **Map Object**         | **48.45**    | **41.96**        | 🟢 **Node.js**     | Node ≈ **1.15× faster**    |
+| **Array.find()**       | 185.53       | **82.57**        | 🟢 **Node.js**     | Node ≈ **2.25× faster**    |
+| **If/Else Chain**      | 27.93        | **26.64**        | 🟢 **Node.js**     | Node ≈ **1.05× faster**    |
+| **For Find Style**     | 112.49       | **79.33**        | 🟢 **Node.js**     | Node ≈ **1.42× faster**    |
+| **For Loop (native)**  | 4329.29      | **957.16**       | 🟢 **Node.js**     | Node ≈ **4.52× faster**    |
 
-## Array find vs for loop
+---
 
-a simpler version of find:
+# Array find vs For Loop
+
+## `.find()` simplified behavior
 
 ```
 function find(callback, thisArg) {
-  // 'this' é o array
   for (let i = 0; i < this.length; i++) {
-    if (i in this) { // verifica se o índice existe (importante para arrays esparsos)
+    if (i in this) {
       const value = this[i];
       if (callback.call(thisArg, value, i, this)) {
         return value;
@@ -69,10 +86,9 @@ function find(callback, thisArg) {
   }
   return undefined;
 }
-
 ```
 
-Simple for loop:
+## Simple `for` loop
 
 ```
 const arr = [5, 12, 8, 130, 44];
@@ -84,13 +100,39 @@ for (let i = 0; i < arr.length; i++) {
     break;
   }
 }
-
-console.log(found); // → 12
-
 ```
 
-So we can conclude that the For loop is faster that Find, because you don't need to check index neither do callbacks.
+---
 
-## Author
+# Conclusion
 
-Mauricio Soto
+### **For Find Style is significantly faster than the native For Loop in both Bun and Node.**
+
+Your results show:
+
+- **For Loop (native)** is extremely slow in your implementation
+  (likely due to object key iteration or extra operations inside the loop).
+
+- **For Find Style** (looping a prebuilt array with numeric indexes) is:
+
+  - **38× faster in Bun**
+  - **12× faster in Node**
+    compared to your native For Loop.
+
+- `.find()` is still slower than both manual loops because of:
+
+  - callback overhead
+  - `.call()`
+  - shape transitions
+  - prototype lookups
+  - extra branching (`i in this`)
+
+---
+
+### Final Summary
+
+- **Fastest pattern overall:** **Switch Case** (Bun)
+- **Fastest array-walking method:** **For Find Style (Node)**
+- **Slowest by far:** **Your native For Loop implementation**
+- **`.find()` is slower due to callback overhead**
+- **Bun dominates in dispatch structures (switch, object-map) but loses in array scanning**

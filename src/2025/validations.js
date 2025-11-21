@@ -142,6 +142,31 @@ function validateWithArrayFind(type) {
   return found ? found.rule : null;
 }
 
+// --- Method 6: For() FIND style ---
+function validateWithForFindStyle(type) {
+  const arr = validatorArray;
+
+  for (let i = 0; i < arr.length; i++) {
+    if (i in arr) {
+      const item = arr[i];
+      if (item.type === type) {
+        return item.rule;
+      }
+    }
+  }
+  return null;
+}
+
+// --- Method 7: For() NATIVE style ---
+function validateWithForLoopEntries(type) {
+  const entries = Object.entries(countryValidationRules);
+  for (let i = 0; i < entries.length; i++) {
+    const [key, rule] = entries[i];
+    if (key === type) return rule;
+  }
+  return null;
+}
+
 // --- Performance Benchmark Logic (unchanged) ---
 function runPerformanceTest(validatorFn, validatorName) {
   console.log(`🚀 Starting benchmark for: ${validatorName}`);
@@ -169,23 +194,5 @@ runPerformanceTest(validateWithObjectMap, "Object Literal Map");
 runPerformanceTest(validateWithMap, "Map Object");
 runPerformanceTest(validateWithArrayFind, "Array.find()");
 runPerformanceTest(validateWithIfElse, "If/Else Chain");
-
-/** output
-bun .\validations.js      
-Running expanded validation performance comparison (25 types)...
-
-🚀 Starting benchmark for: Switch Case
-✅ Finished Switch Case in 77.4443 ms.
-
-🚀 Starting benchmark for: Object Literal Map
-✅ Finished Object Literal Map in 77.9642 ms.
-
-🚀 Starting benchmark for: Map Object
-✅ Finished Map Object in 130.8153 ms.
-
-🚀 Starting benchmark for: Array.find()
-✅ Finished Array.find() in 538.2765 ms.
-
-🚀 Starting benchmark for: If/Else Chain
-✅ Finished If/Else Chain in 79.8437 ms.
- */
+runPerformanceTest(validateWithForFindStyle, "For Find Style");
+runPerformanceTest(validateWithForLoopEntries, "For Loop");
