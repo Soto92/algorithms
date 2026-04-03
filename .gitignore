@@ -1,1 +1,3 @@
 /node_modules
+/src/scala3/.scala-build
+/src/scala3/.bsp
