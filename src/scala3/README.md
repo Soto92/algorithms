@@ -42,6 +42,39 @@ Cons:
 - Insertions can create unbalanced trees without rebalancing.
 - Worst-case query time can approach linear if data is skewed.
 
+## Insert example and tree shape
+
+Example input (k=2):
+```scala
+val points = Vector(
+  Vector(2.0, 3.0),
+  Vector(5.0, 4.0),
+  Vector(9.0, 6.0),
+  Vector(4.0, 7.0),
+  Vector(8.0, 1.0),
+  Vector(7.0, 2.0)
+)
+
+val tree = points.foldLeft(KDTree.empty(2))(_.insert(_))
+```
+
+Resulting KD-Tree (axes alternate x/y by depth):
+```
+                (2,3)  [x]
+                   \
+                   (5,4)  [y]
+                   /    \
+              (8,1)     (9,6)  [x]
+               /        /
+            (7,2)    (4,7)  [y]
+```
+
+Explanation (how insert works):
+- The tree compares points by one axis per level: axis = depth % k.
+- If point(axis) < node.point(axis), it goes left; otherwise it goes right.
+- This alternates axes as depth increases (x, y, x, y in 2D).
+- If the point already exists, the node is returned unchanged (no duplicates).
+
 ## Files
 
 - KD-Tree implementation: KDTree.scala
