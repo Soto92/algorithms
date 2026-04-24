@@ -1,6 +1,6 @@
 # KD-Tree (k-dimensional Tree) - Scala 3
 
-This module implements a k-dimensional tree for organizing points in k-dimensional space, with basic operations such as insertion, membership tests, nearest-neighbor search, and range search.
+This module implements a k-dimensional tree for organizing points in k-dimensional space, storing a value at each point and supporting insertion, membership tests, nearest-neighbor search, and range search.
 
 ## Use case (What is the use case for this DS?)
 
@@ -55,7 +55,7 @@ val points = Vector(
   Vector(7.0, 2.0)
 )
 
-val tree = points.foldLeft(KDTree.empty(2))(_.insert(_))
+val tree = points.foldLeft(KDTree.empty[Vector[Double]](2))((t, p) => t.insert(p, p))
 ```
 
 Resulting KD-Tree (axes alternate x/y by depth):
@@ -79,6 +79,15 @@ Explanation (how insert works):
 
 - KD-Tree implementation: KDTree.scala
 - Tests (MUnit): KDTreeTest.scala
+- Restaurant demo: RestaurantDemo.scala
+
+## Real-world demo: restaurant search
+
+The `restaurantDemo` entrypoint builds a 2D KD-Tree of restaurants (projecting lat/lon into meters) and queries the nearest restaurant plus the ones within a radius.
+
+```bash
+scala-cli run . --main-class algorithms.scala3.restaurantDemo
+```
 
 ## Running tests (scala-cli)
 
