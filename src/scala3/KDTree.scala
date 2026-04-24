@@ -2,89 +2,112 @@
 
 package algorithms.scala3
 
-final case class KDTree private (k: Int, root: Option[KDTree.Node], size: Int):
-  import KDTree.Node
+final case class KDTree[A] private (k: Int, root: Option[KDTree.Node[A]], size: Int):
+  import KDTree.{Entry, Node}
 
-  def insert(point: Vector[Double]): KDTree =
+  def insert(point: Vector[Double], value: A): KDTree[A] =
     KDTree.validatePoint(k, point)
-    val newRoot = insertNode(root, point, depth = 0)
-    val newSize = if contains(point) then size else size + 1
+    val (newRoot, insertedNew) = insertNode(root, Entry(point, value), depth = 0)
+    val newSize = if insertedNew then size + 1 else size
     copy(root = Some(newRoot), size = newSize)
 
   def contains(point: Vector[Double]): Boolean =
     KDTree.validatePoint(k, point)
-    def loop(node: Option[Node], depth: Int): Boolean =
+    def loop(node: Option[Node[A]], depth: Int): Boolean =
       node match
         case None => false
         case Some(n) =>
-          if n.point == point then true
+          if n.entry.point == point then true
           else
             val axis = depth % k
-            if point(axis) < n.point(axis) then loop(n.left, depth + 1)
+            if point(axis) < n.entry.point(axis) then loop(n.left, depth + 1)
             else loop(n.right, depth + 1)
     loop(root, 0)
 
-  def nearest(target: Vector[Double]): Option[Vector[Double]] =
+  def get(point: Vector[Double]): Option[A] =
+    KDTree.validatePoint(k, point)
+    def loop(node: Option[Node[A]], depth: Int): Option[A] =
+      node match
+        case None => None
+        case Some(n) =>
+          if n.entry.point == point then Some(n.entry.value)
+          else
+            val axis = depth % k
+            if point(axis) < n.entry.point(axis) then loop(n.left, depth + 1)
+            else loop(n.right, depth + 1)
+    loop(root, 0)
+
+  def nearest(target: Vector[Double]): Option[Entry[A]] =
     KDTree.validatePoint(k, target)
     root.map { r =>
-      val (bestPoint, _) = nearestNode(r, target, depth = 0, bestPoint = r.point, bestDist2 = KDTree.dist2(r.point, target))
-      bestPoint
+      val (bestEntry, _) =
+        nearestNode(
+          r,
+          target,
+          depth = 0,
+          bestEntry = r.entry,
+          bestDist2 = KDTree.dist2(r.entry.point, target)
+        )
+      bestEntry
     }
 
-  def range(min: Vector[Double], max: Vector[Double]): Vector[Vector[Double]] =
+  def range(min: Vector[Double], max: Vector[Double]): Vector[Entry[A]] =
     KDTree.validatePoint(k, min)
     KDTree.validatePoint(k, max)
-    def loop(node: Option[Node], depth: Int, acc: Vector[Vector[Double]]): Vector[Vector[Double]] =
+    def loop(node: Option[Node[A]], depth: Int, acc: Vector[Entry[A]]): Vector[Entry[A]] =
       node match
         case None => acc
         case Some(n) =>
           val axis = depth % k
-          val inRange = KDTree.inRange(n.point, min, max)
-          val acc1 = if inRange then acc :+ n.point else acc
-          val acc2 = if min(axis) <= n.point(axis) then loop(n.left, depth + 1, acc1) else acc1
-          if max(axis) >= n.point(axis) then loop(n.right, depth + 1, acc2) else acc2
+          val inRange = KDTree.inRange(n.entry.point, min, max)
+          val acc1 = if inRange then acc :+ n.entry else acc
+          val acc2 = if min(axis) <= n.entry.point(axis) then loop(n.left, depth + 1, acc1) else acc1
+          if max(axis) >= n.entry.point(axis) then loop(n.right, depth + 1, acc2) else acc2
     loop(root, 0, Vector.empty)
 
-  private def insertNode(node: Option[Node], point: Vector[Double], depth: Int): Node =
+  private def insertNode(node: Option[Node[A]], entry: Entry[A], depth: Int): (Node[A], Boolean) =
     node match
-      case None => Node(point, None, None)
+      case None => (Node(entry, None, None), true)
       case Some(n) =>
-        if n.point == point then n
+        if n.entry.point == entry.point then (n.copy(entry = entry), false)
         else
           val axis = depth % k
-          if point(axis) < n.point(axis) then
-            n.copy(left = Some(insertNode(n.left, point, depth + 1)))
+          if entry.point(axis) < n.entry.point(axis) then
+            val (newLeft, insertedNew) = insertNode(n.left, entry, depth + 1)
+            (n.copy(left = Some(newLeft)), insertedNew)
           else
-            n.copy(right = Some(insertNode(n.right, point, depth + 1)))
+            val (newRight, insertedNew) = insertNode(n.right, entry, depth + 1)
+            (n.copy(right = Some(newRight)), insertedNew)
 
-  private def nearestNode(node: Node, target: Vector[Double], depth: Int, bestPoint: Vector[Double], bestDist2: Double): (Vector[Double], Double) =
-    val currentDist2 = KDTree.dist2(node.point, target)
-    val (newBestPoint, newBestDist2) =
-      if currentDist2 < bestDist2 then (node.point, currentDist2) else (bestPoint, bestDist2)
+  private def nearestNode(node: Node[A], target: Vector[Double], depth: Int, bestEntry: Entry[A], bestDist2: Double): (Entry[A], Double) =
+    val currentDist2 = KDTree.dist2(node.entry.point, target)
+    val (newBestEntry, newBestDist2) =
+      if currentDist2 < bestDist2 then (node.entry, currentDist2) else (bestEntry, bestDist2)
 
     val axis = depth % k
     val (near, far) =
-      if target(axis) < node.point(axis) then (node.left, node.right) else (node.right, node.left)
+      if target(axis) < node.entry.point(axis) then (node.left, node.right) else (node.right, node.left)
 
-    val (bestAfterNearPoint, bestAfterNearDist2) =
+    val (bestAfterNearEntry, bestAfterNearDist2) =
       near match
-        case None => (newBestPoint, newBestDist2)
-        case Some(n) => nearestNode(n, target, depth + 1, newBestPoint, newBestDist2)
+        case None => (newBestEntry, newBestDist2)
+        case Some(n) => nearestNode(n, target, depth + 1, newBestEntry, newBestDist2)
 
-    val axisDelta = target(axis) - node.point(axis)
+    val axisDelta = target(axis) - node.entry.point(axis)
     if axisDelta * axisDelta < bestAfterNearDist2 then
       far match
-        case None => (bestAfterNearPoint, bestAfterNearDist2)
-        case Some(n) => nearestNode(n, target, depth + 1, bestAfterNearPoint, bestAfterNearDist2)
+        case None => (bestAfterNearEntry, bestAfterNearDist2)
+        case Some(n) => nearestNode(n, target, depth + 1, bestAfterNearEntry, bestAfterNearDist2)
     else
-      (bestAfterNearPoint, bestAfterNearDist2)
+      (bestAfterNearEntry, bestAfterNearDist2)
 
 object KDTree:
-  final case class Node(point: Vector[Double], left: Option[Node], right: Option[Node])
+  final case class Entry[A](point: Vector[Double], value: A)
+  final case class Node[A](entry: Entry[A], left: Option[Node[A]], right: Option[Node[A]])
 
-  def empty(k: Int): KDTree =
+  def empty[A](k: Int): KDTree[A] =
     require(k > 0, "k must be positive")
-    KDTree(k, None, 0)
+    KDTree[A](k, None, 0)
 
   private def validatePoint(k: Int, point: Vector[Double]): Unit =
     require(point.size == k, s"Point dimension ${point.size} does not match k=$k")
