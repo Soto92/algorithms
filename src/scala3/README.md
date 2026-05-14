@@ -1,6 +1,6 @@
 # KD-Tree (k-dimensional Tree) - Scala 3
 
-This module implements a k-dimensional tree for organizing points in k-dimensional space, storing a value at each point and supporting insertion, membership tests, nearest-neighbor search, and range search.
+This module implements a classic median-split k-dimensional tree for organizing points in k-dimensional space. It stores a value at each point and supports insertion, membership tests, nearest-neighbor search, and range search.
 
 ## Use case (What is the use case for this DS?)
 
@@ -39,10 +39,10 @@ Pros:
 Cons:
 
 - Performance degrades as dimension grows (the "curse of dimensionality").
-- Insertions can create unbalanced trees without rebalancing.
+- The tree is rebuilt by median split after insertion, so inserts are more expensive than plain binary-search-tree insertion.
 - Worst-case query time can approach linear if data is skewed.
 
-## Insert example and tree shape
+## Build example and tree shape
 
 Example input (k=2):
 ```scala
@@ -55,25 +55,25 @@ val points = Vector(
   Vector(7.0, 2.0)
 )
 
-val tree = points.foldLeft(KDTree.empty[Vector[Double]](2))((t, p) => t.insert(p, p))
+val tree = KDTree.from(2, points.map(p => p -> p))
 ```
 
-Resulting KD-Tree (axes alternate x/y by depth):
+Resulting balanced KD-Tree (axes alternate x/y by depth):
 ```
-                (2,3)  [x]
-                   \
-                   (5,4)  [y]
-                   /    \
-              (8,1)     (9,6)  [x]
-               /        /
-            (7,2)    (4,7)  [y]
+                   (7,2) [x]
+                  /         \
+             (5,4) [y]     (9,6) [y]
+             /      \       /
+        (2,3) [x] (4,7) [x] (8,1) [x]
 ```
 
-Explanation (how insert works):
-- The tree compares points by one axis per level: axis = depth % k.
-- If point(axis) < node.point(axis), it goes left; otherwise it goes right.
-- This alternates axes as depth increases (x, y, x, y in 2D).
-- If the point already exists, the node is returned unchanged (no duplicates).
+Explanation (classic construction):
+- The tree chooses an axis per level: axis = depth % k.
+- It sorts the current points by that axis and promotes the median point to the current node.
+- Points before the median become the left subtree; points after the median become the right subtree.
+- This repeats recursively, alternating axes as depth increases (x, y, x, y in 2D).
+- In the example above, `(7,2)` is the median on `x`, then `(5,4)` and `(9,6)` are medians on `y` for their subtrees.
+- If the point already exists, the latest value replaces the previous value (no duplicate node).
 
 ## Files
 

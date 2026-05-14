@@ -30,10 +30,10 @@ object RestaurantIndex:
   private val OriginLon = -46.6333
 
   def build(restaurants: Vector[Restaurant]): KDTree[Restaurant] =
-    restaurants.foldLeft(KDTree.empty[Restaurant](2)) { (tree, r) =>
+    KDTree.from(2, restaurants.map { r =>
       val p = Geo.projectToMeters(OriginLat, OriginLon, r.latitude, r.longitude)
-      tree.insert(p, r)
-    }
+      p -> r
+    })
 
   def nearest(tree: KDTree[Restaurant], latitude: Double, longitude: Double): Option[(Restaurant, Double)] =
     val target = Geo.projectToMeters(OriginLat, OriginLon, latitude, longitude)

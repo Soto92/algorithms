@@ -28,6 +28,14 @@ class KDTreeTest extends munit.FunSuite:
     val nearest = tree.nearest(Vector(9.2, 6.2)).map(_.point)
     assertEquals(nearest, Some(Vector(9.0, 6.0)))
 
+  test("builds a classic median-split kd-tree"):
+    val tree = KDTree.from(2, points.map(p => p -> p))
+    val root = tree.root.get
+    assertEquals(root.axis, 0)
+    assertEquals(root.entry.point, Vector(7.0, 2.0))
+    assertEquals(root.left.map(_.axis), Some(1))
+    assertEquals(root.right.map(_.axis), Some(1))
+
   test("range search"):
     val tree = points.foldLeft(KDTree.empty[Vector[Double]](2))((t, p) => t.insert(p, p))
     val found = tree.range(Vector(4.0, 2.0), Vector(9.0, 6.0)).map(_.point)
