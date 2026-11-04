@@ -33,6 +33,23 @@ Implementation of some algorithms to study purposes.
   - Fun Game -> https://flexboxfroggy.com/
   - https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 
+## Repository map
+
+- [`cryptoAssets/`](cryptoAssets/README.md) — sample files for the crypto demos.
+- [`server-crypto/`](server-crypto/README.md) — Express API that stores encrypted files.
+- [`src/`](src/README.md) — index of the algorithm collections and how to run them.
+  - [`2024/`](src/2024/README.md) — traveling salesman heuristic.
+  - [`2025/`](src/2025/readme.md) — NeetCode practice and data structures.
+  - [`2026/`](src/2026/README.md) — LeetCode, TypeScript, OOAD and crypto exercises.
+    - [`trees/`](src/2026/trees/README.md) — catalog of tree variants.
+    - [`graphs/`](src/2026/graphs/README.md) — graph notes and pointers.
+  - [`99problems/`](src/99problems/readme.md) — classic Prolog problems in JavaScript.
+  - [`queues/`](src/queues/readme.md) — queue implementations.
+  - [`regex/`](src/regex/README.md) — regex extract/transform/validate helpers.
+  - [`scala3/`](src/scala3/README.md) — Scala 3 KD-Tree.
+  - [`sort/`](src/sort/README.md) — sorting algorithms.
+  - [`__tests__/`](src/__tests__/README.md) — Jest tests.
+
 ## Author
 
 Mauricio Soto
